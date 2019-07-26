@@ -29,7 +29,7 @@ func (t TokenList) JoinMatch() string {
 func (t TokenList) AverageWeight() float32 {
     var sum float32
     for _,m := range t.TokenMatches {
-        if m.Weight > .6 {
+        if m.Weight > .79 {
             sum += m.Weight
         }
     }

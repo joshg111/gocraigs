@@ -38,8 +38,14 @@ func MatchSourceAndTargets(sources []Source, targets []Target) RankedTarget {
 func combineRankedTargets(targetChannel <-chan RankedTarget) TargetRankMap {
 
 	rankedMap := make(TargetRankMap)
+	countMap := make(map[Target]int)
 	for receivedTarget := range targetChannel {
 		rankedMap[receivedTarget.Target] += receivedTarget.Rank
+		countMap[receivedTarget.Target]++
+	}
+
+	for k, v := range countMap {
+		rankedMap[k] /= float32(v)
 	}
 
 	return rankedMap
@@ -60,7 +66,7 @@ func findHighestRank(rankedTargets []RankedTarget) RankedTarget {
 
 	var high RankedTarget
 	for _, rankedTarget := range rankedTargets {
-		if rankedTarget.Rank > high.Rank {
+		if rankedTarget.Rank >= high.Rank {
 			high = rankedTarget
 		}
 	}
@@ -76,7 +82,7 @@ type Response events.APIGatewayProxyResponse
 // Target is the kbb related info for the Text we're matching, and the associated meta Data
 type Target struct {
 	Text string `json:"text"`
-	Data string `json:"data"`
+	Key  string `json:"key"`
 }
 
 // RankedTarget wraps a Target with a ranking
@@ -113,7 +119,7 @@ func Handler(request events.APIGatewayProxyRequest) (Response, error) {
 		Body:            string(encoded),
 		Headers: map[string]string{
 			"Content-Type":           "application/json",
-			"X-MyCompany-Func-Reply": "hello-handler",
+			"X-MyCompany-Func-Reply": "ranks-handler",
 		},
 	}
 

@@ -5,7 +5,6 @@ import (
 	"strings"
 	"serverless-craigs/src/insequence"
     "regexp"
-    "fmt"
 )
 
 
@@ -58,10 +57,8 @@ type Tokens struct {
 }
 
 func Get(source, target string) float32 {
-    fmt.Println("rankprovider.Get")
     var weight float32
     tokens := _triWayTokenMerge(source, target);
-    fmt.Println(tokens)
     weight = (tokens.Source.AverageWeight() + tokens.Target.AverageWeight()) / 2;
 
     // logger.log();
