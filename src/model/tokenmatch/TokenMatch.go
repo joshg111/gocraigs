@@ -20,7 +20,9 @@ type TokenList struct {
 func (t TokenList) JoinMatch() string {
     var arr []string
     for _, m := range t.TokenMatches {
-        arr = append(arr, m.Match)
+        if m.Weight > .79 {
+            arr = append(arr, m.Match)
+        }
     }
 
     return strings.Join(arr, " ")

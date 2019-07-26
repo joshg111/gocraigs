@@ -6,10 +6,8 @@ import (
 )
 
 func TestInsequence(t *testing.T) {
-	res := Insequence("abcdefg hijklmn opqr", "acdefg")
-	fmt.Println(res)
-	res = Insequence("abc d", "aee abc eec")
-	fmt.Println(res)
-	res = Insequence("abcd", "ab cd")
+	
+	res := Insequence("M3",
+"BMW 328i Coupe M Sport Pakage Low Mileage")
 	fmt.Println(res)
 }

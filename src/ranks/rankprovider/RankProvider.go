@@ -1,6 +1,7 @@
 package rankprovider
 
 import (
+    // "fmt"
 	"serverless-craigs/src/model/tokenmatch"
 	"strings"
 	"serverless-craigs/src/insequence"
@@ -43,8 +44,11 @@ func _findSourceTokens(sourceTokens []string, shortTarget string) []tokenmatch.T
     for _, sourceToken := range sourceTokens {
         subMatch := insequence.Insequence(sourceToken, shortTarget)
         // Idk why we weight this against only the sourceToken length, it should be the target length. 
-        // The weight we return should be weighted correctly anyway.
-        weight := float32(subMatch.Count) / float32(len(sourceToken))
+        // weight := float32(subMatch.Count) / float32(len(sourceToken))
+        // fmt.Println("shortTarget = ", shortTarget)
+        // fmt.Println(subMatch)
+        weight := float32(subMatch.Count * 2) / float32(subMatch.End - subMatch.Start + 1 + len(sourceToken))
+        // fmt.Println(weight)
         res = append(res, tokenmatch.TokenMatch{Token: sourceToken, Weight: weight, Match: subMatch.Match})
     }
 
@@ -60,7 +64,9 @@ func Get(source, target string) float32 {
     var weight float32
     tokens := _triWayTokenMerge(source, target);
     weight = (tokens.Source.AverageWeight() + tokens.Target.AverageWeight()) / 2;
-
+    // fmt.Println(tokens.Source.AverageWeight(), tokens.Target.AverageWeight())
+    // fmt.Println(tokens.Source)
+    // fmt.Println(tokens.Target)
     // logger.log();
     // logger.log("source = ", source, ", target = ", target);
     // logger.log("sourceTokens = " + sourceTokens);

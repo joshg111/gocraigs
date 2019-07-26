@@ -10,8 +10,8 @@ import (
 type ResMax struct {
 	Count  int
 	Match  string
-	start  int
-	end    int
+	Start  int
+	End    int
 	Weight float32
 }
 
@@ -37,7 +37,7 @@ func (a byWeight) Less(i, j int) bool { return a[j].Weight < a[i].Weight }
 // This is also the inverse of levenshtein
 func Insequence(a string, b string) ResMax {
 
-	resMax := ResMax{Count: 0, Match: "", start: 0, end: 0, Weight: 0}
+	resMax := ResMax{Count: 0, Match: "", Start: 0, End: 0, Weight: 0}
 	// Try to use a single space between words
 	a = strings.ToLower(a)
 	re := regexp.MustCompile(`\s`)
@@ -68,25 +68,25 @@ func Insequence(a string, b string) ResMax {
 
 			deletion := distanceMatrix[j][i-1] // deletion
 			if deletion.Count > 0 {
-				deletion.end = deletion.end + 1
-				deletion.Weight = calcWeight(deletion.Count, bLen, deletion.end, deletion.start)
+				deletion.End = deletion.End + 1
+				deletion.Weight = calcWeight(deletion.Count, bLen, deletion.End, deletion.Start)
 			}
 
 			insertion := distanceMatrix[j-1][i] // insertion
 			if insertion.Count > 0 {
-				insertion.end = insertion.end + 1
-				insertion.Weight = calcWeight(insertion.Count, bLen, insertion.end, insertion.start)
+				insertion.End = insertion.End + 1
+				insertion.Weight = calcWeight(insertion.Count, bLen, insertion.End, insertion.Start)
 			}
 
 			substitution := distanceMatrix[j-1][i-1] // substitution
 			if isMatch {
 				if substitution.Count == 0 {
-					substitution.start = j - 1
+					substitution.Start = j - 1
 				}
-				substitution.end = j - 1
+				substitution.End = j - 1
 				substitution.Count++
 				substitution.Match = substitution.Match + string(a[i-1])
-				substitution.Weight = calcWeight(substitution.Count, bLen, substitution.end, substitution.start)
+				substitution.Weight = calcWeight(substitution.Count, bLen, substitution.End, substitution.Start)
 			}
 
 			arr := []ResMax{deletion, insertion, substitution}
