@@ -7,7 +7,8 @@ import (
 
 func TestInsequence(t *testing.T) {
 	
-	res := Insequence("M3",
-"BMW 328i Coupe M Sport Pakage Low Mileage")
+	// res := Insequence("Chevy Prism (For Parts) sedan", "infiniti")
+	res := Insequence("van", "land")
+	// res := Insequence("ii", "i")
 	fmt.Println(res)
 }

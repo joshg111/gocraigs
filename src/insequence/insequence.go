@@ -1,6 +1,7 @@
 package insequence
 
 import (
+	"serverless-craigs/src/logger"
 	"regexp"
 	"sort"
 	"strings"
@@ -23,8 +24,10 @@ func (r ResMax) fill(n int) []ResMax {
 	return s
 }
 
-func calcWeight(count, bLen, end, start int) float32 {
-	return float32(count*2) / float32(bLen+(end-start)+1)
+func calcWeight(count, aLen, end, start int) float32 {
+	// return float32(count*2) / float32(bLen+(end-start)+1)
+	distance := 1 - float32(count) / float32((end-start)+1)
+	return (float32(count) / float32(aLen)) - distance
 }
 
 type byWeight []ResMax
@@ -36,6 +39,7 @@ func (a byWeight) Less(i, j int) bool { return a[j].Weight < a[i].Weight }
 // Insequence - The dynamic programming algorithm for retrieving the max Weight subsequence that is increasing order aka insequence
 // This is also the inverse of levenshtein
 func Insequence(a string, b string) ResMax {
+	var logger = logger.Logger{false}
 
 	resMax := ResMax{Count: 0, Match: "", Start: 0, End: 0, Weight: 0}
 	// Try to use a single space between words
@@ -51,14 +55,14 @@ func Insequence(a string, b string) ResMax {
 	re = regexp.MustCompile(`(\w)-(\w)`)
 	b = re.ReplaceAllString(b, "$1 $2")
 
-	bLen := len(b)
+	// bLen := len(b)
+	aLen := len(a)
 
 	// Create empty edit distance matrix for all possible modifications of
 	// substrings of a to substrings of b.
 	var distanceMatrix [][]ResMax
-	var row []ResMax
-	row = resMax.fill(len(a) + 1)
-	for i := 1; i <= len(b)+1; i++ {
+	for j := 1; j <= len(b)+1; j++ {
+		var row = resMax.fill(len(a) + 1)
 		distanceMatrix = append(distanceMatrix, row)
 	}
 
@@ -69,24 +73,25 @@ func Insequence(a string, b string) ResMax {
 			deletion := distanceMatrix[j][i-1] // deletion
 			if deletion.Count > 0 {
 				deletion.End = deletion.End + 1
-				deletion.Weight = calcWeight(deletion.Count, bLen, deletion.End, deletion.Start)
+				deletion.Weight = calcWeight(deletion.Count, aLen, deletion.End, deletion.Start)
 			}
 
 			insertion := distanceMatrix[j-1][i] // insertion
 			if insertion.Count > 0 {
 				insertion.End = insertion.End + 1
-				insertion.Weight = calcWeight(insertion.Count, bLen, insertion.End, insertion.Start)
+				insertion.Weight = calcWeight(insertion.Count, aLen, insertion.End, insertion.Start)
 			}
 
 			substitution := distanceMatrix[j-1][i-1] // substitution
 			if isMatch {
+				logger.Log("j = ", j, ", i = ", i)
 				if substitution.Count == 0 {
 					substitution.Start = j - 1
 				}
 				substitution.End = j - 1
 				substitution.Count++
 				substitution.Match = substitution.Match + string(a[i-1])
-				substitution.Weight = calcWeight(substitution.Count, bLen, substitution.End, substitution.Start)
+				substitution.Weight = calcWeight(substitution.Count, aLen, substitution.End, substitution.Start)
 			}
 
 			arr := []ResMax{deletion, insertion, substitution}
@@ -100,6 +105,10 @@ func Insequence(a string, b string) ResMax {
 		}
 	}
 
+	for _, m := range distanceMatrix {
+		logger.Log(m)
+	}
+	
 	return resMax
 }
 

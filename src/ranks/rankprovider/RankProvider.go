@@ -1,7 +1,7 @@
 package rankprovider
 
 import (
-    // "fmt"
+    "serverless-craigs/src/logger"
 	"serverless-craigs/src/model/tokenmatch"
 	"strings"
 	"serverless-craigs/src/insequence"
@@ -39,17 +39,19 @@ func findSourceTokens(source, target string) tokenmatch.TokenList {
  * then we annotate the token with the match.
  */
 func _findSourceTokens(sourceTokens []string, shortTarget string) []tokenmatch.TokenMatch {
+    logger := logger.Logger{false}
 
     var res []tokenmatch.TokenMatch
     for _, sourceToken := range sourceTokens {
         subMatch := insequence.Insequence(sourceToken, shortTarget)
         // Idk why we weight this against only the sourceToken length, it should be the target length. 
         // weight := float32(subMatch.Count) / float32(len(sourceToken))
-        // fmt.Println("shortTarget = ", shortTarget)
-        // fmt.Println(subMatch)
-        weight := float32(subMatch.Count * 2) / float32(subMatch.End - subMatch.Start + 1 + len(sourceToken))
+        // logger.Log("sourceTokens = ", sourceTokens)
+        // logger.Log("shortTarget = ", shortTarget)
+        logger.Log("src = ", sourceToken, ", match = ", subMatch)
+        // weight := float32(subMatch.Count * 2) / float32(subMatch.End - subMatch.Start + 1 + len(sourceToken))
         // fmt.Println(weight)
-        res = append(res, tokenmatch.TokenMatch{Token: sourceToken, Weight: weight, Match: subMatch.Match})
+        res = append(res, tokenmatch.TokenMatch{Token: sourceToken, Weight: subMatch.Weight, Match: subMatch.Match})
     }
 
     return res;
@@ -61,25 +63,19 @@ type Tokens struct {
 }
 
 func Get(source, target string) float32 {
+    logger := logger.Logger{false}
     var weight float32
     tokens := _triWayTokenMerge(source, target);
     weight = (tokens.Source.AverageWeight() + tokens.Target.AverageWeight()) / 2;
-    // fmt.Println(tokens.Source.AverageWeight(), tokens.Target.AverageWeight())
-    // fmt.Println(tokens.Source)
-    // fmt.Println(tokens.Target)
-    // logger.log();
-    // logger.log("source = ", source, ", target = ", target);
-    // logger.log("sourceTokens = " + sourceTokens);
-    // logger.log("targetTokens = " + targetTokens);
-    // logger.log("weight = ", weight);
-    // logger.log("triWayTokenMerge Time: ", new Date() - startTime);
-    // return {weight, sourceTokenMatch, targetTokenMatch};
-    // return {weight, sourceTokens};
+    logger.Log(tokens.Source.AverageWeight(), tokens.Target.AverageWeight())
+    logger.Log(tokens.Source)
+    logger.Log(tokens.Target)
+    
     return weight
 }
 
 func _reduceTokens(source, target, sourceWords, targetWords string) Tokens {
-
+    // fmt.Println("\n_reduceTokens")
     sourceTokens := findSourceTokens(source, targetWords);
     targetTokens := findSourceTokens(target, sourceWords);
 
@@ -101,6 +97,7 @@ func _triWayTokenMerge(source, target string) Tokens {
     // logger.log();
     // logger.log("_triWayTokenMerge");
     // logger.log("source = ", source, ", target = ", target);
+    // fmt.Println("_triWayTokenMerge");
     prevSourceTokens := make(TokenMap)
     tokens := _reduceTokens(source, target, source, target)
     sourceJoined := tokens.Source.JoinMatch()
@@ -108,7 +105,7 @@ func _triWayTokenMerge(source, target string) Tokens {
 
     for !inMap {
         prevSourceTokens[sourceJoined] = true
-        tokens = _reduceTokens(source, target, sourceJoined, tokens.Target.JoinMatch())
+        tokens = _reduceTokens(source, target, tokens.Target.JoinMatch(), sourceJoined)
         sourceJoined = tokens.Source.JoinMatch()
         _,inMap = prevSourceTokens[sourceJoined]
     }
