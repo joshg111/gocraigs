@@ -10,6 +10,7 @@ type TokenMatch struct {
     Token string
     Weight float32
     Match string
+    Count int
 }
 
 // TokenList is a list of TokenMatch
@@ -36,4 +37,14 @@ func (t TokenList) AverageWeight() float32 {
         }
     }
     return sum / float32(len(t.TokenMatches));
+}
+
+func (t TokenList) SumCount() int {
+    var sum int
+    for _,m := range t.TokenMatches {
+        if m.Weight > .79 {
+            sum += m.Count
+        }
+    }
+    return sum
 }

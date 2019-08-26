@@ -9,7 +9,8 @@ func TestRankProvider(t *testing.T) {
 	// target - 2 / 8
 	// source - 8 / 
 	// res := Get("Chevy 2500 Cargo Van", "land rover")
-	res := Get("Chevy Volt Premium", "spark lt hatchback 4d")
+	res := Get("CHEVY EQUINOX LT AWD 4DR SUV/// FACTORY WARRANTY SUV", "Impala LT Sedan 4D")
+	// res := Get("CHEVY EQUINOX LT AWD 4DR SUV/// FACTORY WARRANTY SUV", "Equinox LS Sport Utility 4D")
 	fmt.Println(res)
 
 	// target - 2 / 8

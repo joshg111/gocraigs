@@ -29,8 +29,9 @@ func calcWeight(count, aLen, end, start int) float32 {
 	// return float32(count*2) / float32(bLen+(end-start)+1)
 	distance := float32(0)
 	targetMatchLength := (end-start)+1
-	if targetMatchLength > aLen {
-		distance = 1 - (float32(aLen) / float32(targetMatchLength))
+	// if targetMatchLength > aLen {
+	if targetMatchLength > count {
+		distance = 1 - (float32(count) / float32(targetMatchLength))
 	}
 	
 	logger.Log("distance = ", distance, ", aLen = ", aLen, ", end = ", end, ", start = ", start)
@@ -75,30 +76,40 @@ func Insequence(a string, b string) ResMax {
 
 	for j := 1; j <= len(b); j++ {
 		for i := 1; i <= len(a); i++ {
+
+			for _, m := range distanceMatrix {
+				logger.Log(m)
+			}
+
 			isMatch := a[i-1] == b[j-1]
 
 			deletion := distanceMatrix[j][i-1] // deletion
 			if deletion.Count > 0 {
 				deletion.End = deletion.End + 1
 				deletion.Weight = calcWeight(deletion.Count, aLen, deletion.End, deletion.Start)
+				logger.Log("deletion = ", deletion)
 			}
 
 			insertion := distanceMatrix[j-1][i] // insertion
 			if insertion.Count > 0 {
 				insertion.End = insertion.End + 1
 				insertion.Weight = calcWeight(insertion.Count, aLen, insertion.End, insertion.Start)
+				logger.Log("insertion = ", insertion)
 			}
 
 			substitution := distanceMatrix[j-1][i-1] // substitution
 			if isMatch {
-				logger.Log("j = ", j, ", i = ", i)
+				logger.Log("before substitution = ", substitution)
+				logger.Log("i = ", i, ", j = ", j)
 				if substitution.Count == 0 {
+					logger.Log("new start = ", j-1)
 					substitution.Start = j - 1
 				}
 				substitution.End = j - 1
 				substitution.Count++
 				substitution.Match = substitution.Match + string(a[i-1])
 				substitution.Weight = calcWeight(substitution.Count, aLen, substitution.End, substitution.Start)
+				logger.Log("after substitution = ", substitution)
 			}
 
 			arr := []ResMax{deletion, insertion, substitution}

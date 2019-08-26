@@ -51,7 +51,7 @@ func _findSourceTokens(sourceTokens []string, shortTarget string) []tokenmatch.T
         logger.Log("src = ", sourceToken, ", match = ", subMatch)
         // weight := float32(subMatch.Count * 2) / float32(subMatch.End - subMatch.Start + 1 + len(sourceToken))
         // fmt.Println(weight)
-        res = append(res, tokenmatch.TokenMatch{Token: sourceToken, Weight: subMatch.Weight, Match: subMatch.Match})
+        res = append(res, tokenmatch.TokenMatch{Token: sourceToken, Weight: subMatch.Weight, Match: subMatch.Match, Count: subMatch.Count})
     }
 
     return res;
@@ -66,8 +66,8 @@ func Get(source, target string) float32 {
     logger := logger.Logger{false}
     var weight float32
     tokens := _triWayTokenMerge(source, target);
-    weight = (tokens.Source.AverageWeight() + tokens.Target.AverageWeight()) / 2;
-    logger.Log(tokens.Source.AverageWeight(), tokens.Target.AverageWeight())
+    weight = float32(tokens.Source.SumCount() + tokens.Target.SumCount()) / 2;
+    logger.Log(tokens.Source.SumCount(), tokens.Target.SumCount())
     logger.Log(tokens.Source)
     logger.Log(tokens.Target)
     
