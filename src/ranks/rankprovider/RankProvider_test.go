@@ -9,7 +9,7 @@ func TestRankProvider(t *testing.T) {
 	// target - 2 / 8
 	// source - 8 / 
 	// res := Get("Chevy 2500 Cargo Van", "land rover")
-	res := Get("Chevy 2500 Cargo Van", "chevrolet")
+	res := Get("Chevy Volt Premium", "spark lt hatchback 4d")
 	fmt.Println(res)
 
 	// target - 2 / 8

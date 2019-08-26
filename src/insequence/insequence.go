@@ -25,8 +25,15 @@ func (r ResMax) fill(n int) []ResMax {
 }
 
 func calcWeight(count, aLen, end, start int) float32 {
+	logger := logger.Logger{false}
 	// return float32(count*2) / float32(bLen+(end-start)+1)
-	distance := 1 - float32(count) / float32((end-start)+1)
+	distance := float32(0)
+	targetMatchLength := (end-start)+1
+	if targetMatchLength > aLen {
+		distance = 1 - (float32(aLen) / float32(targetMatchLength))
+	}
+	
+	logger.Log("distance = ", distance, ", aLen = ", aLen, ", end = ", end, ", start = ", start)
 	return (float32(count) / float32(aLen)) - distance
 }
 
