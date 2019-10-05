@@ -47,7 +47,7 @@ func _findSourceTokens(sourceTokens []string, shortTarget string) []tokenmatch.T
         // Idk why we weight this against only the sourceToken length, it should be the target length. 
         // weight := float32(subMatch.Count) / float32(len(sourceToken))
         // logger.Log("sourceTokens = ", sourceTokens)
-        // logger.Log("shortTarget = ", shortTarget)
+        logger.Log("shortTarget = ", shortTarget)
         logger.Log("src = ", sourceToken, ", match = ", subMatch)
         // weight := float32(subMatch.Count * 2) / float32(subMatch.End - subMatch.Start + 1 + len(sourceToken))
         // fmt.Println(weight)
@@ -94,18 +94,22 @@ type TokenMap map[string]bool
  * @param {Target string} target 
  */
 func _triWayTokenMerge(source, target string) Tokens {
+    logger := logger.Logger{false}
     // logger.log();
-    // logger.log("_triWayTokenMerge");
+    logger.Log("_triWayTokenMerge");
     // logger.log("source = ", source, ", target = ", target);
     // fmt.Println("_triWayTokenMerge");
     prevSourceTokens := make(TokenMap)
     tokens := _reduceTokens(source, target, source, target)
+    logger.Log(tokens)
     sourceJoined := tokens.Source.JoinMatch()
     _,inMap := prevSourceTokens[sourceJoined]
 
     for !inMap {
         prevSourceTokens[sourceJoined] = true
+        // Reduce against source/sourceJoined and target/targetJoined
         tokens = _reduceTokens(source, target, tokens.Target.JoinMatch(), sourceJoined)
+        logger.Log(tokens)
         sourceJoined = tokens.Source.JoinMatch()
         _,inMap = prevSourceTokens[sourceJoined]
     }
