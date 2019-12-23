@@ -9,9 +9,12 @@ func TestRankProvider(t *testing.T) {
 	// target - 2 / 8
 	// source - 8 / 
 	// res := Get("Mercedes Benz S430 AMG $1499 OBO sedan", "E Class E 55 AMG Sedan 4D")
-	res := Get("Mercedes Benz S430 AMG $1499 OBO sedan", "S Class S 430 Sedan 4D")
+	// res := Get("Mercedes Benz S430 AMG $1499 OBO sedan", "S Class S 430 Sedan 4D")
 	// res := Get("Mercedes Benz S430", "S Class S 430")
 	// res := Get("CHEVY EQUINOX LT AWD 4DR SUV/// FACTORY WARRANTY SUV", "Equinox LS Sport Utility 4D")
+	res := Get("toyota camry se", "toyota camry hybrid se")
+	fmt.Println(res)
+	res = Get("toyota camry se", "toyota camry se")
 	fmt.Println(res)
 
 	// target - 2 / 8

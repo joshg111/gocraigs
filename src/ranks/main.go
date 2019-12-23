@@ -66,7 +66,7 @@ func findHighestRank(rankedTargets []RankedTarget) RankedTarget {
 
 	var high RankedTarget
 	for _, rankedTarget := range rankedTargets {
-		if rankedTarget.Rank >= high.Rank {
+		if rankedTarget.Rank > high.Rank || (rankedTarget.Rank == high.Rank && len(rankedTarget.Target.Text) < len(high.Target.Text)) {
 			high = rankedTarget
 		}
 		fmt.Println(rankedTarget.Target.Text, rankedTarget.Rank)
